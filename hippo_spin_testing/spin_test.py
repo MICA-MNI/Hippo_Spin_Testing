@@ -6,7 +6,7 @@ from scipy.ndimage import rotate
 from scipy.ndimage import shift
 import warnings
 
-def spin_test(imgfix,imgperm,nperm,metric='pearson',space='orig'):
+def spin_test(imgfix,imgperm,nperm,metric='pearson',space='orig',return_permutedorig='False'):
 
     '''Permutation testing of unfolded hippocampus maps
     Inputs:
@@ -18,9 +18,10 @@ def spin_test(imgfix,imgperm,nperm,metric='pearson',space='orig'):
              the correlation at the original density. If 'unfoldiso' will perform
              the correlation at the isotropic density which is the density used 
              for permutations.
+      return_permutedimg_orig: 
     Outputs: 
       metricnull: null distribution of metric
-      permutedimg: All permuted spatial maps at 'unfoldiso' density
+      permutedimg: All permuted spatial maps at 'unfoldiso' density (if return_permutatedorig is False) and at 'orig' density (if return_permutatedorig is True)
       r_obs: The observed association between the two aligned maps
       pval: p-value based on metricnull r_obs'''
     if type(imgfix) == str:
@@ -101,5 +102,8 @@ def spin_test(imgfix,imgperm,nperm,metric='pearson',space='orig'):
             metricnull[ii] = (imgfixobs,imgpermflat)           
 
     pval = np.mean(np.abs(metricnull) >= np.abs(r_obs)) #p-value is the sum of all instances where null correspondance is >= observed correspondance / nperm
-                
-    return metricnull,permutedimgiso,pval,r_obs
+
+    if return_permutatedorig:
+        return metricnull,permutedimg,pval,r_obs
+    else:
+        return metricnull,permutedimgiso,pval,r_obs
